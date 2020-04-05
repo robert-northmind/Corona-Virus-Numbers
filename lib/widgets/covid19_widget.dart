@@ -8,7 +8,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class Covid19Widget extends StatelessWidget {
   final Covid19CountryReport countryReport;
-  Covid19Widget({@required this.countryReport});
+  final VoidCallback onTapped;
+  final VoidCallback onFavoriteTapped;
+
+  Covid19Widget({
+    @required this.countryReport,
+    this.onTapped,
+    this.onFavoriteTapped,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -37,58 +44,67 @@ class Covid19Widget extends StatelessWidget {
                   child: _FavButton(
                     key: Key('${countryReport.country}'),
                     country: countryReport.country,
+                    onTap: onFavoriteTapped,
                   ),
                 ),
               ],
             ),
-            _TitleWidget(
-              title: '${countryReport.reports.first.confirmed}',
-              fontSize: 20.0,
-            ),
-            _TitleWidget(
-              title: 'total infected',
-              fontSize: 12.0,
-            ),
-            Container(
-              height: 120,
-              child: Stack(
+            GestureDetector(
+              onTap: onTapped,
+              child: Column(
                 children: <Widget>[
-                  Align(
-                    alignment: Alignment.bottomCenter,
-                    child: SimpleBarChart(countryReport: countryReport),
+                  _TitleWidget(
+                    title: '${countryReport.reports.first.confirmed}',
+                    fontSize: 20.0,
                   ),
-                  Align(
-                    alignment: Alignment.topCenter,
-                    child: SimpleLineChart(countryReport: countryReport),
+                  _TitleWidget(
+                    title: 'total infected',
+                    fontSize: 12.0,
                   ),
+                  Container(
+                    height: 120,
+                    child: Stack(
+                      children: <Widget>[
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: SimpleBarChart(countryReport: countryReport),
+                        ),
+                        Align(
+                          alignment: Alignment.topCenter,
+                          child: SimpleLineChart(countryReport: countryReport),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  _TitleWidget(
+                    title: countryReport.getDiffInfected(),
+                    fontSize: 20.0,
+                  ),
+                  _TitleWidget(
+                    title: 'number infected last 7 days',
+                    fontSize: 12.0,
+                  ),
+                  SizedBox(height: 20),
+                  if (countryReport.getTotalRecovered() != null)
+                    _TitleWidget(
+                      title:
+                          'Total ${countryReport.getTotalRecovered()} recovered',
+                      fontSize: 12.0,
+                    ),
+                  if (countryReport.getTotalRecovered() == null)
+                    _TitleWidget(
+                      title: 'No info about recovered',
+                      fontSize: 12.0,
+                    ),
+                  if (countryReport.getTotalDeaths() != null)
+                    _TitleWidget(
+                      title: 'Total ${countryReport.getTotalDeaths()} deaths',
+                      fontSize: 12.0,
+                    ),
                 ],
               ),
             ),
-            SizedBox(height: 20),
-            _TitleWidget(
-              title: countryReport.getDiffInfected(),
-              fontSize: 20.0,
-            ),
-            _TitleWidget(
-              title: 'number infected last 7 days',
-              fontSize: 12.0,
-            ),
-            SizedBox(height: 20),
-            if (countryReport.getTotalRecovered() != null)
-              _TitleWidget(
-                title: 'Total ${countryReport.getTotalRecovered()} recovered',
-                fontSize: 12.0,
-              ),
-            if (countryReport.getTotalRecovered() == null)
-              _TitleWidget(
-                title: 'No info about recovered',
-                fontSize: 12.0,
-              ),
-            if (countryReport.getTotalDeaths() != null)
-              _TitleWidget(
-                title: 'Total ${countryReport.getTotalDeaths()} deaths',
-                fontSize: 12.0,
-              ),
           ],
         ),
       ),
@@ -120,8 +136,12 @@ class _TitleWidget extends StatelessWidget {
 
 class _FavButton extends StatelessWidget {
   final String country;
-
-  const _FavButton({Key key, this.country}) : super(key: key);
+  final VoidCallback onTap;
+  const _FavButton({
+    Key key,
+    this.country,
+    this.onTap,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -129,11 +149,14 @@ class _FavButton extends StatelessWidget {
       bloc: BlocProvider.of<FavBloc>(context),
       builder: (context, state) {
         bool isFav = state.favCountries.contains(country);
-        return Padding(
-          padding: const EdgeInsets.only(right: 13),
-          child: Icon(
-            isFav ? Icons.star : Icons.star_border,
-            color: Colors.white,
+        return GestureDetector(
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.only(right: 13),
+            child: Icon(
+              isFav ? Icons.star : Icons.star_border,
+              color: Colors.white,
+            ),
           ),
         );
       },

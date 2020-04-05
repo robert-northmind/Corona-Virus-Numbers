@@ -4,6 +4,7 @@ import 'package:corona_stats/blocs/covid19/covid19_state.dart';
 import 'package:corona_stats/blocs/favorites/fav_bloc.dart';
 import 'package:corona_stats/blocs/favorites/fav_event.dart';
 import 'package:corona_stats/blocs/favorites/fav_state.dart';
+import 'package:corona_stats/widgets/details_page/details_page_route.dart';
 import 'package:corona_stats/widgets/reload_data_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -49,12 +50,23 @@ class FavoritePage extends StatelessWidget {
                   final countryReporstList = favCountryReports.values.toList();
                   final countryReport = countryReporstList[position];
                   return GestureDetector(
-                    child: Covid19Widget(countryReport: countryReport),
-                    onTap: () {
-                      _showRemoveFavDialog(
-                          context: context, country: countryReport.country);
-                    },
-                  );
+                      child: Covid19Widget(
+                        countryReport: countryReport,
+                        onFavoriteTapped: () {
+                          _showRemoveFavDialog(
+                            context: context,
+                            country: countryReport.country,
+                          );
+                        },
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => DetailsPageRoute(
+                                      countryReport: countryReport,
+                                    )));
+                      });
                 },
                 itemCount: favCountryReports.length,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(

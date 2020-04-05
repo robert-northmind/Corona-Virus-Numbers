@@ -11,7 +11,6 @@ class SimpleLineChart extends StatelessWidget {
     final verticalPadding =
         5 + 40 * countryReport.lineGraphVerticalPaddingFactor();
     final data = countryReport.getLineGraphData();
-
     return Container(
       child: AspectRatio(
         aspectRatio: 2.1,

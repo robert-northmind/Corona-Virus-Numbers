@@ -22,19 +22,17 @@ class Covid19CountryReport {
   }) {
     final reducedReportsData =
         reportsListData.reversed.take(_Constants.nbrReportDays).toList();
-    List<Covid19DailyReport> reports = reducedReportsData.map((reportDataJson) {
-      final dateTime =
-          DateParsing.dateFromPomberGithubCovidString(reportDataJson['date']);
-      reportDataJson['date'] = dateTime;
-      final report = Covid19DailyReport.fromJson(json: reportDataJson);
-      return report;
-    }).toList();
-    reports.removeWhere((report) {
-      return report.confirmed == null || report.confirmed == -1;
-    });
-    final countryReports =
-        Covid19CountryReport(country: country, reports: reports);
-    return countryReports;
+    final reports = reducedReportsData
+        .map((reportDataJson) {
+          final dateTime = DateParsing.dateFromPomberGithubCovidString(
+              reportDataJson['date']);
+          reportDataJson['date'] = dateTime;
+          final report = Covid19DailyReport.fromJson(json: reportDataJson);
+          return report;
+        })
+        .where((report) => report.confirmed != null || report.confirmed != -1)
+        .toList();
+    return Covid19CountryReport(country: country, reports: reports);
   }
 
   @override
@@ -57,7 +55,6 @@ class Covid19CountryReport {
   }) {
     try {
       final country = json[_Constants.countryKey];
-
       List<dynamic> reportsJson = json[_Constants.reportsKey];
       List<Covid19DailyReport> reports = reportsJson.map((reportDataJson) {
         Map<String, dynamic> jsonTest = reportDataJson as Map<String, dynamic>;
