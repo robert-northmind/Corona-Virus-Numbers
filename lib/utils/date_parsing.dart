@@ -18,7 +18,7 @@ class DateParsing {
     }
 
     if (dateComponents[2].length == 1) {
-      parsableDateString += '0${dateComponents[1]}';
+      parsableDateString += '0${dateComponents[2]}';
     } else if (dateComponents[2].length == 2) {
       parsableDateString += dateComponents[2];
     } else {

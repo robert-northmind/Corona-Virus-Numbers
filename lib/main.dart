@@ -82,14 +82,16 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                 controller: _tabController,
                 tabs: myTabs,
               ),
-              title: _AppTitleWidget(title: 'Corona Virus Numbers'),
+              title: AppTitleWidget(title: 'Corona Virus Numbers'),
             ),
             body: TabBarView(
               controller: _tabController,
               children: [
-                FavoritePage(goToAllListCallback: () {
-                  _tabController.animateTo(1);
-                }),
+                FavoritePage(
+                  goToAllListCallback: () {
+                    _tabController.animateTo(1);
+                  },
+                ),
                 AllListPage(),
                 InfoPage(),
               ],
@@ -101,9 +103,9 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
   }
 }
 
-class _AppTitleWidget extends StatelessWidget {
+class AppTitleWidget extends StatelessWidget {
   final String title;
-  _AppTitleWidget({this.title});
+  AppTitleWidget({this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -114,7 +116,7 @@ class _AppTitleWidget extends StatelessWidget {
       builder: (context, covid19State) {
         List<Widget> widgets = [
           Text(
-            'Corona Virus Numbers',
+            this.title,
             overflow: TextOverflow.ellipsis,
             maxLines: 2,
             style: TextStyle(
