@@ -5,6 +5,7 @@ import 'package:corona_stats/utils/theme.dart';
 import 'package:corona_stats/widgets/simple_charts.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 
 class Covid19Widget extends StatelessWidget {
   final Covid19CountryReport countryReport;
@@ -19,6 +20,7 @@ class Covid19Widget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final numberFormatter = NumberFormat();
     return Card(
       color: Covid19Theme.appBackgroundColor,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
@@ -54,7 +56,8 @@ class Covid19Widget extends StatelessWidget {
               child: Column(
                 children: <Widget>[
                   _TitleWidget(
-                    title: '${countryReport.reports.first.confirmed}',
+                    title:
+                        '${numberFormatter.format(countryReport.reports.first.confirmed)}',
                     fontSize: 20.0,
                   ),
                   _TitleWidget(
