@@ -1,8 +1,7 @@
 import 'package:corona_stats/models/covid19_country_report.dart';
 import 'package:corona_stats/http_clients/covid19_rest_client.dart';
 import 'package:corona_stats/utils/date_parsing.dart';
-
-import '../models/covid19_daily_report.dart';
+import 'package:corona_stats/models/covid19_daily_report.dart';
 
 String _allWorldCountry = 'All World';
 
