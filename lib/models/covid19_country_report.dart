@@ -1,6 +1,7 @@
 import 'package:corona_stats/utils/date_parsing.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import 'covid19_daily_report.dart';
 
@@ -13,6 +14,7 @@ class _Constants {
 class Covid19CountryReport {
   final String country;
   final List<Covid19DailyReport> reports;
+  static final _numberFormatter = NumberFormat();
 
   Covid19CountryReport({@required this.reports, @required this.country});
 
@@ -73,7 +75,8 @@ class Covid19CountryReport {
     int oldestData = reports.last.confirmed;
     int newestData = reports.first.confirmed;
     final diff = newestData - oldestData;
-    return diff >= 0 ? '+$diff' : '$diff';
+    final diffStr = _numberFormatter.format(diff);
+    return diff >= 0 ? '+$diffStr' : '$diffStr';
   }
 
   int _cachedTotalConfirmed;
