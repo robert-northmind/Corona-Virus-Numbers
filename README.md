@@ -1,16 +1,17 @@
 ![Image description](/readme-resources/AppIcon.png)
+
 # Corona Virus Numbers
 
-This app provides you key statistics based on the data repository by the Johns Hopkins University* to stay informed about the latest developments of COVID-19 worldwide.
+This app provides you key statistics based on the data repository by the Johns Hopkins University\* to stay informed about the latest developments of COVID-19 worldwide.
 
-It includes the number of confirmed infection cases with COVID-19 as well as deaths and recovered cases for every country since 2020-1-22. The intuitive dashboard allows you to search for every country and to create our own list of bookmarks. 
+It includes the number of confirmed infection cases with COVID-19 as well as deaths and recovered cases for every country since 2020-1-22. The intuitive dashboard allows you to search for every country and to create our own list of bookmarks.
 
-We hope this app will help you to stay informed about each country that is important to you . 
+We hope this app will help you to stay informed about each country that is important to you .
 Be well and help to flatten the curve!
 
-*The data in this app comes from the repository for the 2019 Novel Coronavirus Visual Dashboard operated by the Johns Hopkins University Center for Systems Science and Engineering (JHU CSSE). Also, Supported by ESRI Living Atlas Team and the Johns Hopkins University Applied Physics Lab (JHU APL).
+\*The data in this app comes from the repository for the 2019 Novel Coronavirus Visual Dashboard operated by the Johns Hopkins University Center for Systems Science and Engineering (JHU CSSE). Also, Supported by ESRI Living Atlas Team and the Johns Hopkins University Applied Physics Lab (JHU APL).
 
-- https://github.com/pomber/covid19  
+- https://github.com/pomber/covid19
 - https://github.com/CSSEGISandData/COVID-19
 
 ## App info
