@@ -36,7 +36,7 @@ samples, guidance on mobile development, and a full API reference.
 
 ## Installing this app
 
-For Android you can install this app directly using the APK below  
-[Android APK](releases/Android/corona-app-release.apk)
+For Android you can install this app directly by downloading the latest APK that you find in the link below  
+[Android APK](https://github.com/robert-northmind/Corona-Virus-Numbers/releases)
 
 To build iOS or Android locally you need the Flutter SDK on your computer and then open a Terminal and navigate to `<app-src-root>/` and then execute this command in the Terminal: `flutter run`
