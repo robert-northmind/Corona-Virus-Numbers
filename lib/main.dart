@@ -82,7 +82,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                 controller: _tabController,
                 tabs: myTabs,
               ),
-              title: AppTitleWidget(title: 'Corona Virus Numbers 1'),
+              title: AppTitleWidget(title: 'Corona Virus Numbers'),
             ),
             body: TabBarView(
               controller: _tabController,

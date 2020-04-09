@@ -15,17 +15,22 @@ class InfoPage extends StatelessWidget {
               child: _InfoText('About the app'),
             ),
             SizedBox(height: 15),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 60.0),
+              child: Text(
+                'Thanks for using this app. It was created to help spread the information about the Corona Virus. The app was built using Flutter, an open source UI SDK.',
+                textAlign: TextAlign.center,
+              ),
+            ),
+            SizedBox(height: 15),
             Text(
-              'Thanks for using this app.\nIt was created by Robert Magnusson\nusing Flutter, an open source UI SDK.',
+              'Special thanks to these developers\nfor helping to develop the app:',
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 10),
-            RaisedButton(
-              color: Colors.amber,
-              child: Text('Check out my other apps'),
-              onPressed: () {
-                _launchURL('https://itunes.apple.com/app/id1065823748');
-              },
+            SizedBox(height: 15),
+            Text(
+              'Robert Magnusson\nEmran Bajrami',
+              textAlign: TextAlign.center,
             ),
             SizedBox(height: 30),
             _SectionDivider(),
