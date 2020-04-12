@@ -22,7 +22,7 @@ class DetailsPageRoute extends StatelessWidget {
           children: <Widget>[
             SummaryListTileWidget(
               title: 'Total cases',
-              values: countryReport.reports.reversed
+              values: countryReport.allReports
                   .map(
                     (item) => item.confirmed,
                   )
@@ -30,7 +30,7 @@ class DetailsPageRoute extends StatelessWidget {
             ),
             SummaryListTileWidget(
               title: 'Deaths',
-              values: countryReport.reports.reversed
+              values: countryReport.allReports
                   .map(
                     (item) => item.deaths,
                   )
@@ -38,7 +38,7 @@ class DetailsPageRoute extends StatelessWidget {
             ),
             SummaryListTileWidget(
               title: 'Recovered',
-              values: countryReport.reports.reversed
+              values: countryReport.allReports
                   .map(
                     (item) => item.recovered,
                   )
@@ -46,7 +46,7 @@ class DetailsPageRoute extends StatelessWidget {
             ),
             SummaryListTileWidget(
               title: 'Active cases',
-              values: countryReport.reports.reversed
+              values: countryReport.allReports
                   .map(
                     (item) => item.confirmed - item.recovered,
                   )
@@ -54,8 +54,12 @@ class DetailsPageRoute extends StatelessWidget {
             ),
             SummaryListTileWidget(
               title: "Death rate in %",
-              values: countryReport.reports.reversed.map((item) {
-                return item.deaths / item.confirmed.toDouble() * 100;
+              values: countryReport.allReports.map((item) {
+                if (item.confirmed <= 0) {
+                  return 0;
+                } else {
+                  return item.deaths / item.confirmed.toDouble() * 100;
+                }
               }).toList(),
             ),
             WeeklyDayToDaySummaryWidget(

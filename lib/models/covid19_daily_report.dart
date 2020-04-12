@@ -44,9 +44,9 @@ class Covid19DailyReport {
       final dateString = json[_Constants.dateKey] as String;
       date = DateTime.parse(dateString);
     }
-    final confirmed = json[_Constants.confirmedKey] as int;
-    final deaths = json[_Constants.deathsKey] as int;
-    final recovered = json[_Constants.recoveredKey] as int;
+    final confirmed = json[_Constants.confirmedKey] as int ?? -1;
+    final deaths = json[_Constants.deathsKey] as int ?? -1;
+    final recovered = json[_Constants.recoveredKey] as int ?? -1;
     return Covid19DailyReport(
       date: date,
       confirmed: confirmed,

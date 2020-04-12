@@ -9,7 +9,7 @@ class WeeklyDayToDaySummaryWidget extends StatelessWidget {
     Key key,
     Covid19CountryReport countryReport,
   }) : super(key: key) {
-    final reversed = countryReport.reports.reversed.toList();
+    final reversed = countryReport.lastWeekReports.reversed.toList();
     for (var i = 1; i < reversed.length; i++) {
       final currentDay = reversed[i];
       final previousDay = reversed[i - 1];
