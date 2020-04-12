@@ -57,7 +57,7 @@ class Covid19Widget extends StatelessWidget {
                 children: <Widget>[
                   _TitleWidget(
                     title:
-                        '${numberFormatter.format(countryReport.reports.first.confirmed)}',
+                        '${numberFormatter.format(countryReport.lastWeekReports.first.confirmed)}',
                     fontSize: 20.0,
                   ),
                   _TitleWidget(

@@ -8,7 +8,6 @@ class DateParsing {
       return null;
     }
     String parsableDateString = dateComponents[0];
-
     if (dateComponents[1].length == 1) {
       parsableDateString += '0${dateComponents[1]}';
     } else if (dateComponents[1].length == 2) {
@@ -24,7 +23,6 @@ class DateParsing {
     } else {
       return null;
     }
-
     return DateTime.parse(parsableDateString);
   }
 

@@ -6,49 +6,76 @@ import 'package:intl/intl.dart';
 import 'covid19_daily_report.dart';
 
 class _Constants {
-  static int nbrReportDays = 8;
+  static int nbrWeekReportDays = 8;
   static String countryKey = 'country';
-  static String reportsKey = 'reports';
+  static String lastWeekReportsKey = 'lastWeekReports';
+  static String allReportsKey = 'allReports';
 }
 
 class Covid19CountryReport {
   final String country;
-  final List<Covid19DailyReport> reports;
+  final List<Covid19DailyReport> lastWeekReports;
+  final List<Covid19DailyReport> allReports;
   static final _numberFormatter = NumberFormat();
 
-  Covid19CountryReport({@required this.reports, @required this.country});
+  Covid19CountryReport(
+      {@required this.lastWeekReports,
+      @required this.allReports,
+      @required this.country});
 
   factory Covid19CountryReport.from({
     @required String country,
     @required List<dynamic> reportsListData,
   }) {
+    final allReports = reportsListData.map((reportDataJson) {
+      final dateTime =
+          DateParsing.dateFromPomberGithubCovidString(reportDataJson['date']);
+      reportDataJson['date'] = dateTime;
+      final report = Covid19DailyReport.fromJson(json: reportDataJson);
+      return report;
+    }).toList();
+
     final reducedReportsData =
-        reportsListData.reversed.take(_Constants.nbrReportDays).toList();
-    final reports = reducedReportsData
+        reportsListData.reversed.take(_Constants.nbrWeekReportDays).toList();
+    final weekReports = reducedReportsData
         .map((reportDataJson) {
-          final dateTime = DateParsing.dateFromPomberGithubCovidString(
-              reportDataJson['date']);
-          reportDataJson['date'] = dateTime;
+          final dateJsonValue = reportDataJson['date'];
+          if (dateJsonValue is! DateTime) {
+            final dateTime = DateParsing.dateFromPomberGithubCovidString(
+                reportDataJson['date']);
+            reportDataJson['date'] = dateTime;
+          }
           final report = Covid19DailyReport.fromJson(json: reportDataJson);
           return report;
         })
         .where((report) => report.confirmed != null || report.confirmed != -1)
         .toList();
-    return Covid19CountryReport(country: country, reports: reports);
+    return Covid19CountryReport(
+      country: country,
+      lastWeekReports: weekReports,
+      allReports: allReports,
+    );
   }
 
   @override
   String toString() {
-    return '${_Constants.countryKey}: $country, ${_Constants.reportsKey}: $reports';
+    return '${_Constants.countryKey}: $country, ${_Constants.lastWeekReportsKey}: $lastWeekReports';
   }
 
   Map<String, dynamic> toJson() {
-    List<Map<String, dynamic>> reportsJson = reports.map((report) {
+    List<Map<String, dynamic>> allReportsJson = allReports.map((report) {
       return report.toJson();
     }).toList();
+
+    List<Map<String, dynamic>> lestWeekReportsJson =
+        lastWeekReports.map((report) {
+      return report.toJson();
+    }).toList();
+
     return {
       _Constants.countryKey: country,
-      _Constants.reportsKey: reportsJson,
+      _Constants.lastWeekReportsKey: lestWeekReportsJson,
+      _Constants.allReportsKey: allReportsJson,
     };
   }
 
@@ -57,14 +84,28 @@ class Covid19CountryReport {
   }) {
     try {
       final country = json[_Constants.countryKey];
-      List<dynamic> reportsJson = json[_Constants.reportsKey];
-      List<Covid19DailyReport> reports = reportsJson.map((reportDataJson) {
-        Map<String, dynamic> jsonTest = reportDataJson as Map<String, dynamic>;
-        return Covid19DailyReport.fromJson(json: jsonTest);
+
+      List<dynamic> lastWeekReportsJson = json[_Constants.lastWeekReportsKey];
+      List<Covid19DailyReport> lastWeekReports =
+          lastWeekReportsJson.map((reportDataJson) {
+        Map<String, dynamic> dailyReportJson =
+            reportDataJson as Map<String, dynamic>;
+        return Covid19DailyReport.fromJson(json: dailyReportJson);
       }).toList();
 
-      final countryReports =
-          Covid19CountryReport(country: country, reports: reports);
+      List<dynamic> allReportsJson = json[_Constants.allReportsKey];
+      List<Covid19DailyReport> allReports =
+          allReportsJson.map((reportDataJson) {
+        Map<String, dynamic> dailyReportJson =
+            reportDataJson as Map<String, dynamic>;
+        return Covid19DailyReport.fromJson(json: dailyReportJson);
+      }).toList();
+
+      final countryReports = Covid19CountryReport(
+        country: country,
+        lastWeekReports: lastWeekReports,
+        allReports: allReports,
+      );
       return countryReports;
     } catch (_) {
       return null;
@@ -72,8 +113,8 @@ class Covid19CountryReport {
   }
 
   String getDiffInfected() {
-    int oldestData = reports.last.confirmed;
-    int newestData = reports.first.confirmed;
+    int oldestData = lastWeekReports.last.confirmed;
+    int newestData = lastWeekReports.first.confirmed;
     final diff = newestData - oldestData;
     final diffStr = _numberFormatter.format(diff);
     return diff >= 0 ? '+$diffStr' : '$diffStr';
@@ -84,7 +125,7 @@ class Covid19CountryReport {
     if (_cachedTotalConfirmed != null) {
       return _cachedTotalConfirmed;
     }
-    int total = reports.firstWhere((report) {
+    int total = lastWeekReports.firstWhere((report) {
       return report.confirmed != null && report.confirmed >= 0;
     }).confirmed;
     _cachedTotalConfirmed = total;
@@ -96,7 +137,7 @@ class Covid19CountryReport {
     if (_cachedTotalDeaths != null) {
       return _cachedTotalDeaths;
     }
-    int total = reports.firstWhere((report) {
+    int total = lastWeekReports.firstWhere((report) {
       return report.deaths != null && report.deaths >= 0;
     }).deaths;
     _cachedTotalDeaths = total;
@@ -110,8 +151,8 @@ class Covid19CountryReport {
     }
 
     Covid19DailyReport matchedReport;
-    for (int i = 0; i < reports.length; i++) {
-      final report = reports[i];
+    for (int i = 0; i < lastWeekReports.length; i++) {
+      final report = lastWeekReports[i];
       if (report != null && report.recovered != null && report.recovered >= 0) {
         matchedReport = report;
         break;
@@ -130,7 +171,7 @@ class Covid19CountryReport {
       return _cachedLineGraphData;
     }
 
-    final graphData = reports.map((report) {
+    final graphData = lastWeekReports.map((report) {
       return report.confirmed / 1.0;
     }).toList();
     graphData.removeLast();
@@ -150,8 +191,8 @@ class Covid19CountryReport {
       return _cachedVerticalPaddingFactor;
     }
 
-    int min = reports.last.confirmed;
-    int max = reports.first.confirmed;
+    int min = lastWeekReports.last.confirmed;
+    int max = lastWeekReports.first.confirmed;
     if (min == null || max == null) {
       return 1;
     }
@@ -172,8 +213,9 @@ class Covid19CountryReport {
     }
 
     List<BarChartData> data = [];
-    for (int i = 0; i < reports.length - 1; i++) {
-      int diff = reports[i].confirmed - reports[i + 1].confirmed;
+    for (int i = 0; i < lastWeekReports.length - 1; i++) {
+      int diff =
+          lastWeekReports[i].confirmed - lastWeekReports[i + 1].confirmed;
       diff = diff < 0 ? 0 : diff;
       data.add(BarChartData(index: i, value: diff));
     }
@@ -193,8 +235,9 @@ class Covid19CountryReport {
     int min;
     int max;
 
-    for (int i = 0; i < reports.length - 1; i++) {
-      int diff = reports[i].confirmed - reports[i + 1].confirmed;
+    for (int i = 0; i < lastWeekReports.length - 1; i++) {
+      int diff =
+          lastWeekReports[i].confirmed - lastWeekReports[i + 1].confirmed;
       diff = diff < 0 ? 0 : diff;
       if (min == null || diff < min) {
         min = diff;

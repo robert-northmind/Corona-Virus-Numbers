@@ -10,9 +10,11 @@ class Covid19Repo {
     try {
       final json = await Covid19RestClient.fetchCovidStats();
       final Map<String, Covid19CountryReport> countryReportsMap = {};
-      countryReportsMap[_allWorldCountry] =
-          Covid19CountryReport(country: _allWorldCountry, reports: []);
-
+      countryReportsMap[_allWorldCountry] = Covid19CountryReport(
+        country: _allWorldCountry,
+        lastWeekReports: [],
+        allReports: [],
+      );
       json.forEach((key, val) {
         final countryReports =
             Covid19CountryReport.from(country: key, reportsListData: val);
@@ -43,14 +45,14 @@ class Covid19Repo {
     List<Covid19CountryReport> allCountriesList =
         countryReportsMap.values.toList();
 
+    final firstCountry = allCountriesList[1];
     List<List<dynamic>> reportInfoAllWorld = [];
-    for (int i = 0; i < 8; i++) {
+    for (int i = 0; i < firstCountry.allReports.length; i++) {
       reportInfoAllWorld.add([DateTime.now(), 0, 0, 0]);
     }
-
     allCountriesList.forEach((country) {
-      for (int j = 0; j < country.reports.length; j++) {
-        final dayReport = country.reports[j];
+      for (int j = 0; j < country.allReports.length; j++) {
+        final dayReport = country.allReports[j];
         if (dayReport.date != null) {
           reportInfoAllWorld[j][0] = dayReport.date;
         }
@@ -66,13 +68,13 @@ class Covid19Repo {
       }
     });
 
-    List<Covid19DailyReport> dayReports = [];
+    List<Covid19DailyReport> allReports = [];
     reportInfoAllWorld.forEach((reportAllWorld) {
       DateTime date = reportAllWorld[0];
       int confirmed = reportAllWorld[1];
       int deaths = reportAllWorld[2];
       int recovered = reportAllWorld[3];
-      dayReports.add(
+      allReports.add(
         Covid19DailyReport(
           confirmed: confirmed,
           recovered: recovered,
@@ -81,6 +83,17 @@ class Covid19Repo {
         ),
       );
     });
-    return Covid19CountryReport(country: _allWorldCountry, reports: dayReports);
+
+    List<Covid19DailyReport> weekDayReports = allReports
+        .getRange(allReports.length - 8, allReports.length)
+        .toList()
+        .reversed
+        .toList();
+
+    return Covid19CountryReport(
+      country: _allWorldCountry,
+      lastWeekReports: weekDayReports,
+      allReports: allReports,
+    );
   }
 }
