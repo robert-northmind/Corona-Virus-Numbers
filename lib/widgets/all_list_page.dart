@@ -5,6 +5,7 @@ import 'package:corona_stats/blocs/favorites/fav_bloc.dart';
 import 'package:corona_stats/blocs/favorites/fav_event.dart';
 import 'package:corona_stats/utils/debouncer.dart';
 import 'package:corona_stats/widgets/covid19_widget.dart';
+import 'package:corona_stats/widgets/details_page/details_page_route.dart';
 import 'package:corona_stats/widgets/reload_data_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -62,10 +63,20 @@ class _AllListPageState extends State<AllListPage> {
                   itemBuilder: (context, position) {
                     final countryReport = _filteredCountries[position];
                     return GestureDetector(
-                      child: Covid19Widget(countryReport: countryReport),
+                      child: Covid19Widget(
+                        countryReport: countryReport,
+                        onFavoriteTapped: () {
+                          BlocProvider.of<FavBloc>(context)
+                              .add(FavEvent(country: countryReport.country));
+                        },
+                      ),
                       onTap: () {
-                        BlocProvider.of<FavBloc>(context)
-                            .add(FavEvent(country: countryReport.country));
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => DetailsPageRoute(
+                                      countryReport: countryReport,
+                                    )));
                       },
                     );
                   },
