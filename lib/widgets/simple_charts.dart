@@ -18,15 +18,15 @@ class SimpleLineChart extends StatelessWidget {
           chartPadding:
               EdgeInsets.symmetric(vertical: verticalPadding, horizontal: 20),
           lines: [
-            new Sparkline(
+            Sparkline(
               data: data,
-              stroke: new PaintOptions.stroke(
+              stroke: PaintOptions.stroke(
                 color: Colors.red[500],
                 strokeWidth: 3.0,
               ),
-              marker: new MarkerOptions(
+              marker: MarkerOptions(
                 size: 4.0,
-                paint: new PaintOptions.fill(color: Colors.red[500]),
+                paint: PaintOptions.fill(color: Colors.red[500]),
               ),
             ),
           ],

@@ -1,4 +1,5 @@
 import 'package:corona_stats/models/covid19_country_report.dart';
+import 'package:corona_stats/utils/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -13,41 +14,51 @@ class WeeklyDayToDaySummaryWidget extends StatelessWidget {
     for (var i = 1; i < reversed.length; i++) {
       final currentDay = reversed[i];
       final previousDay = reversed[i - 1];
-      final hasChanged = currentDay.deaths != previousDay.deaths ||
-          currentDay.confirmed != previousDay.confirmed ||
-          currentDay.recovered != previousDay.recovered;
-      if (hasChanged) {
-        _list.add(_DayToDayListItem(
-          date: currentDay.date,
-          deaths: _DailyStat(
-            current: currentDay.deaths,
-            previous: previousDay.deaths,
-          ),
-          newCases: _DailyStat(
-            current: currentDay.confirmed,
-            previous: previousDay.confirmed,
-          ),
-          recovered: _DailyStat(
-            current: currentDay.recovered,
-            previous: previousDay.recovered,
-          ),
-        ));
-      }
+      final previousPreviousDay = i - 2 >= 0 ? reversed[i - 2] : null;
+      _list.add(_DayToDayListItem(
+        date: currentDay.date,
+        deaths: _DailyStat(
+          current: currentDay.deaths - previousDay.deaths,
+          previous: previousPreviousDay != null
+              ? previousDay.deaths - previousPreviousDay.deaths
+              : null,
+        ),
+        newCases: _DailyStat(
+          current: currentDay.confirmed - previousDay.confirmed,
+          previous: previousPreviousDay != null
+              ? previousDay.confirmed - previousPreviousDay.confirmed
+              : null,
+        ),
+        recovered: _DailyStat(
+          current: currentDay.recovered - previousDay.recovered,
+          previous: previousPreviousDay != null
+              ? previousDay.recovered - previousPreviousDay.recovered
+              : null,
+        ),
+      ));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final formatter = DateFormat("dd. MMMM. yyyy");
     return Card(
+      color: Covid19Theme.appBackgroundColor,
+      elevation: 4.0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.only(left: 16, top: 16),
+            padding: const EdgeInsets.fromLTRB(16, 20, 16, 20),
             child: Text(
-              'Last ${_list.length} days',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              'Summary of the last ${_list.length} days',
+              style: TextStyle(
+                fontFamily: 'Open Sans',
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+                fontStyle: FontStyle.italic,
+                color: Colors.white,
+              ),
             ),
           ),
           ListView.builder(
@@ -56,38 +67,7 @@ class WeeklyDayToDaySummaryWidget extends StatelessWidget {
               itemCount: _list.length,
               itemBuilder: (context, index) {
                 final item = _list.reversed.toList()[index];
-                return SizedBox(
-                  height: 70,
-                  child: Container(
-                    child: ListTile(
-                        title: Text(
-                          formatter.format(item.date),
-                        ),
-                        subtitle: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              _StatsItemWidget(
-                                title: 'New cases',
-                                value: item.newCases,
-                                positiveIncrement: Colors.greenAccent,
-                                negativeIncrement: Colors.redAccent,
-                              ),
-                              _StatsItemWidget(
-                                title: 'Recovered',
-                                value: item.recovered,
-                                positiveIncrement: Colors.greenAccent,
-                                negativeIncrement: Colors.redAccent,
-                              ),
-                              _StatsItemWidget(
-                                title: 'Deaths',
-                                value: item.deaths,
-                                positiveIncrement: Colors.greenAccent,
-                                negativeIncrement: Colors.redAccent,
-                              ),
-                            ])),
-                  ),
-                );
+                return _DayToDaySummaryWidget(dayToDayItem: item);
               }),
         ],
       ),
@@ -95,24 +75,112 @@ class WeeklyDayToDaySummaryWidget extends StatelessWidget {
   }
 }
 
+class _DayToDaySummaryWidget extends StatelessWidget {
+  final _DayToDayListItem dayToDayItem;
+  static final _dateFormatter = DateFormat("dd. MMMM. yyyy");
+
+  const _DayToDaySummaryWidget({Key key, this.dayToDayItem}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 100,
+      child: Column(
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 35.0),
+            child: Container(
+              color: Colors.white12,
+              height: 1,
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
+            child: ListTile(
+                title: Text(
+                  _dateFormatter.format(dayToDayItem.date),
+                  style: TextStyle(
+                    fontFamily: 'Open Sans',
+                    fontSize: 17,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.white,
+                  ),
+                ),
+                subtitle: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      _StatsItemWidget(
+                        title: 'New cases',
+                        value: dayToDayItem.newCases,
+                      ),
+                      _StatsItemWidget(
+                        title: 'Recovered',
+                        changeType: _StatsItemChangeType.increaseIsBetter,
+                        value: dayToDayItem.recovered,
+                      ),
+                      _StatsItemWidget(
+                        title: 'Deaths',
+                        value: dayToDayItem.deaths,
+                      ),
+                    ])),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+enum _StatsItemChangeType { decreaseIsBetter, increaseIsBetter }
+
 class _StatsItemWidget extends StatelessWidget {
+  static final _numberFormatter = NumberFormat();
+  final Color _positiveIncrement = Colors.greenAccent;
+  final Color _negativeIncrement = Colors.redAccent;
+
   final String title;
-  final Color positiveIncrement;
-  final Color negativeIncrement;
+  final _StatsItemChangeType changeType;
   final _DailyStat value;
 
   const _StatsItemWidget({
     Key key,
     this.title,
-    this.positiveIncrement,
-    this.negativeIncrement,
+    this.changeType = _StatsItemChangeType.decreaseIsBetter,
     this.value,
   }) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text("$title: "),
-      Text("${value.current - value.previous}"),
+    bool gotBetter = true;
+    if (value.previous != null) {
+      switch (changeType) {
+        case _StatsItemChangeType.decreaseIsBetter:
+          gotBetter = value.current <= value.previous;
+          break;
+        case _StatsItemChangeType.increaseIsBetter:
+          gotBetter = value.current >= value.previous;
+          break;
+      }
+    }
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Text(
+        title,
+        style: TextStyle(
+          fontFamily: 'Open Sans',
+          fontSize: 15,
+          fontStyle: FontStyle.italic,
+          fontWeight: FontWeight.w300,
+          color: Colors.white,
+        ),
+      ),
+      Text(
+        _numberFormatter.format(value.current),
+        style: TextStyle(
+          fontFamily: 'Open Sans',
+          fontSize: 28,
+          fontWeight: FontWeight.w400,
+          color: gotBetter ? _positiveIncrement : _negativeIncrement,
+        ),
+      ),
     ]);
   }
 }

@@ -2,6 +2,7 @@
 
 ## 1.1.0
 
+- Added possability to change type of graph data in details view
 - Entry point to details page now reachable directly from all countries list
 - Added all reposrt history to details page, not only last 7 days
 
