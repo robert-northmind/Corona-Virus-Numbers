@@ -19,6 +19,7 @@ class DetailsPageRoute extends StatelessWidget {
       ),
       body: Container(
         child: ListView(
+          padding: EdgeInsets.fromLTRB(5, 10, 5, 0),
           children: <Widget>[
             SummaryListTileWidget(
               title: 'Total cases',
@@ -53,7 +54,8 @@ class DetailsPageRoute extends StatelessWidget {
                   .toList(),
             ),
             SummaryListTileWidget(
-              title: "Death rate in %",
+              title: "Death rate",
+              isPercent: true,
               values: countryReport.allReports.map((item) {
                 if (item.confirmed <= 0) {
                   return 0;
@@ -62,10 +64,12 @@ class DetailsPageRoute extends StatelessWidget {
                 }
               }).toList(),
             ),
+            SizedBox(height: 20),
             WeeklyDayToDaySummaryWidget(
               key: Key('DayToDayListWidget'),
               countryReport: countryReport,
-            )
+            ),
+            SizedBox(height: 40),
           ],
         ),
       ),

@@ -1,3 +1,4 @@
+import 'package:corona_stats/utils/theme.dart';
 import 'package:fcharts/fcharts.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -5,17 +6,19 @@ import 'package:intl/intl.dart';
 class SummaryListTileWidget extends StatelessWidget {
   final String title;
   final List<num> values;
+  final bool isPercent;
 
-  const SummaryListTileWidget({
-    Key key,
-    this.title,
-    this.values,
-  }) : super(key: key);
+  const SummaryListTileWidget(
+      {Key key, this.title, this.values, this.isPercent = false})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final numberFormatter = NumberFormat();
     return Card(
+      color: Covid19Theme.appBackgroundColor,
+      elevation: 4.0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: IntrinsicHeight(
@@ -28,16 +31,16 @@ class SummaryListTileWidget extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        numberFormatter.format(
-                          values[values.length - 1],
-                        ),
-                        style: TextStyle(
-                          fontSize: 25,
-                        ),
+                        (isPercent
+                            ? '${values[values.length - 1].toStringAsFixed(1)} %'
+                            : numberFormatter.format(
+                                values[values.length - 1],
+                              )),
+                        style: TextStyle(fontSize: 25, color: Colors.white),
                       ),
                       Text(
                         title,
-                        style: TextStyle(fontSize: 16, color: Colors.black38),
+                        style: TextStyle(fontSize: 16, color: Colors.white),
                       )
                     ]),
               ),
@@ -48,6 +51,10 @@ class SummaryListTileWidget extends StatelessWidget {
                   lines: [
                     Sparkline(
                       data: values.map((data) => data.toDouble()).toList(),
+                      stroke: PaintOptions.stroke(
+                        color: Colors.red[500],
+                        strokeWidth: 2.0,
+                      ),
                     )
                   ],
                 )),
